@@ -12,16 +12,16 @@
 .slider-content {
     display: flex;
     transition: transform 0.5s ease-in-out;
-    width: 100%; /* Asegúrate de que el contenido ocupe todo el ancho */
+    width: 100%;
 }
 
 .slider-item {
-    min-width: 100%; /* Asegura que cada item ocupe todo el ancho */
+    min-width: 100%;
     box-sizing: border-box;
     transition: opacity 0.5s ease-in-out;
     opacity: 0;
-    display: flex; /* Permite centrar contenido verticalmente */
-    justify-content: center; /* Centra contenido horizontalmente */
+    display: flex;
+    justify-content: center;
 }
 
 .slider-item.active {

@@ -4,7 +4,7 @@
 .info {
     
     width: 800px;
-    height: 400px;
+    height: 450px;
 }
 
 .title {
@@ -19,7 +19,7 @@
 }
 
 .description {
-    font-size: 20px;
+    font-size: 18px;
     font-family: "Open Sans", sans-serif;
     font-optical-sizing: auto;
     font-style: normal;
