@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Poetsen+One&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Poetsen+One&display=swap');
+
+.info {
+    
+    width: 800px;
+    height: 400px;
+}
+
+.title {
+    font-family: "Poetsen One", sans-serif;
+    font-weight: 400;
+    font-style: normal;
+}
+
+.genre {
+    font-family: "Open Sans", sans-serif;
+    font-style: italic;
+}
+
+.description {
+    font-size: 20px;
+    font-family: "Open Sans", sans-serif;
+    font-optical-sizing: auto;
+    font-style: normal;
+    font-variation-settings:
+    "wdth" 100;
+}
+
+.description-container {
+    padding-right: 50px;
+}
