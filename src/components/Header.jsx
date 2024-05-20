@@ -7,7 +7,7 @@ const Header = () => {
       <div className="logo">
         <Link to="/">
           <div className="logo-content">
-            <img src="public/movie-icon.svg" alt="Movie Icon"/>
+            <img src="../public/movie-icon.svg" alt="Movie Icon"/>
             <h1>PopcornFlicks</h1>
           </div>
         </Link>
