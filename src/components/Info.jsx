@@ -8,7 +8,7 @@ const Info = ({ info, genres }) => {
 
   return (
     <div className="info">
-      <h1 className='title'>{title}</h1>
+      <p className='title'>{title}</p>
       <p className='genre'>{info.genre_ids.map(id => genres[id]).join(' | ')}</p>
       <p>{year}</p>
       <p style={{ display: 'flex', alignItems: 'center' }}>

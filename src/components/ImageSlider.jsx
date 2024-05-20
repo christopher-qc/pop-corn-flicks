@@ -4,6 +4,7 @@ import '../styles/ImageSlider.css';
 const ImageSlider = ({ movies, indexDad  }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
+
   const handlePrev = () => {
     const newIndex = currentIndex === 0 ? movies.length - 1 : currentIndex - 1;
     const obj = movies.find((m, index) => index === newIndex);
