@@ -16,7 +16,7 @@ jobs:
       - name: Get pull request number
         id: get_pr
         run: |
-          PR_NUMBER=$(jq -r '.[0].number' <<< $(gh pr list -S "${GITHUB_SHA}" --json number))
+          PR_NUMBER=$(jq --raw-output '.pull_request.number' "$GITHUB_EVENT_PATH")
           echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
 
       - name: Send notification to Discord
