@@ -10,10 +10,24 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check out repository
+        uses: actions/checkout@v3
+
+      - name: Get pull request number
+        id: get_pr
+        run: |
+          PR_NUMBER=$(jq -r '.[0].number' <<< $(gh pr list -S "${GITHUB_SHA}" --json number))
+          echo "PR_NUMBER=${PR_NUMBER}" >> $GITHUB_ENV
+
       - name: Send notification to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+          GITHUB_SHA: ${{ github.sha }}
+          PR_NUMBER: ${{ env.PR_NUMBER }}
         run: |
+          PR_URL="https://github.com/${GITHUB_REPOSITORY}/pull/${PR_NUMBER}"
+          COMMIT_URL="https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
           curl -H "Content-Type: application/json" \
-          -d "{\"content\": \"Se ha hecho merge a la rama production: ${{ github.event.ref }}\nCommit: ${{ github.sha }}\nAutor: ${{ github.actor }}\"}" \
-          $DISCORD_WEBHOOK_URL
+            -d "{\"content\": \"Se ha hecho merge a la rama production: ${{ github.ref }}\nPull Request: ${PR_URL}\nCommit: [${GITHUB_SHA}](${COMMIT_URL})\nAutor: ${{ github.actor }}\"}" \
+            $DISCORD_WEBHOOK_URL
