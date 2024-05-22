@@ -28,6 +28,7 @@ jobs:
         run: |
           PR_URL="https://github.com/${GITHUB_REPOSITORY}/pull/${PR_NUMBER}"
           COMMIT_URL="https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
+          MENTION_LAMAR="<@788195198487363615>"
           curl -H "Content-Type: application/json" \
-            -d "{\"content\": \"Se ha hecho merge a la rama production: ${{ github.ref }}\nPull Request: ${PR_URL}\nCommit: [${GITHUB_SHA}](${COMMIT_URL})\nAutor: ${{ github.actor }}\"}" \
+            -d "{\"content\": \"Se ha hecho merge a la rama production: ${{ github.ref }}\nPull Request: ${PR_URL}\nCommit: [${GITHUB_SHA}](${COMMIT_URL})\nAutor: ${{ github.actor }}\nMencionado: ${MENTION_LAMAR}\"}" \
             $DISCORD_WEBHOOK_URL
