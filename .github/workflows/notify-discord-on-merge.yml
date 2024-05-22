@@ -37,7 +37,7 @@ jobs:
           MERGED_PR_NUMBER=$(echo "$MERGE_COMMIT_MESSAGE" | grep -oP '(?<=Merge pull request #)\d+' | head -1)
           MERGED_PR_TITLE=$(jq --raw-output '.pull_request.title // empty' "https://api.github.com/repos/${GITHUB_REPOSITORY}/pulls/${MERGED_PR_NUMBER}")
 
-          MENTION="<@690191607307567119>"
+          MENTION="<@788195198487363615>"
           curl -H "Content-Type: application/json" \
             -d "{\"content\": \"Se ha hecho merge a la rama production en el repositorio ${REPOSITORY_NAME}: ${{ github.ref }}\n\nPull Request Mergeado: [${MERGED_PR_NUMBER}](${PR_URL}) - ${MERGED_PR_TITLE}\nCommit: [${GITHUB_SHA}](${COMMIT_URL})\nAutor: ${ACTOR}\nMencionado: ${MENTION}\"}" \
             $DISCORD_MERGE
