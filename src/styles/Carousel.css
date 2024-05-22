@@ -1,0 +1,42 @@
+.carousel {
+  position: relative;
+  margin: auto;
+  overflow: hidden;
+}
+
+.carousel-inner {
+  display: flex;
+  transition: transform 0.5s ease-in-out;
+  margin-left: -10px;
+}
+
+.carousel-item {
+  box-sizing: border-box;
+  margin-right: 10px;
+}
+
+.carousel-item img {
+  height: 150px;
+  display: block;
+}
+
+.carousel-button {
+  position: absolute;
+  top: 50%;
+  background-color: rgba(12, 12, 12, 0.253);
+  border: none;
+  padding: 10px;
+  cursor: pointer;
+  z-index: 100;
+}
+
+.carousel-button.prev {
+  left: 0;
+  transform: translateY(-50%);
+}
+
+.carousel-button.next {
+  right: 0;
+  transform: translateY(-50%);
+}
+  

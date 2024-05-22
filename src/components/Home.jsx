@@ -29,7 +29,7 @@ function App() {
       setMovies(prevMovies => [...prevMovies, ...data.results]);
       setLoaded(true);
       setFirstObj(data.results[0]);
-      setUrlImage(`https://image.tmdb.org/t/p/w500${data.results[0].poster_path}`)
+      setUrlImage(`https://image.tmdb.org/t/p/w1280${data.results[0].poster_path}`)
     } catch (err) {
       console.error(err);
     }
@@ -41,7 +41,7 @@ function App() {
   
 
   const indexChildren = (obj) => {
-    const url = `https://image.tmdb.org/t/p/w500${obj.poster_path}`
+    const url = `https://image.tmdb.org/t/p/w1280${obj.poster_path}`
     setUrlImage(url);
     setFirstObj(obj);
   };

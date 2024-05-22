@@ -14,3 +14,15 @@ export const fetchGenres = async () => {
     const response = await axios.get(urlGeners);
     return response.data.genres;
 }
+
+export const fetchCast = async (id) => {
+    const url = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`;
+    const response = await axios.get(url);
+    return response.data;
+}
+
+export const fetchVideos = async () => {
+    const url = `https://api.themoviedb.org/3/movie/823464/videos?language=en-US&api_key=${apiKey}`;
+    const response = await axios.get(url);
+    return response.data.results;
+}

@@ -2,6 +2,7 @@ import { useState }from 'react'
 import Header from "./Header"
 import { fetchAllMovies, fetchGenres } from '../apiServices'
 import Card from './Card'
+import { useNavigate } from 'react-router-dom';
 
 import '../styles/Movies.css'
 
@@ -55,12 +56,18 @@ const Movies = () => {
     setDisabled(disabled);
   };
 
+  const navigate = useNavigate();
+  const handleNavigate = (data) => {
+    const states = { data, genres };
+    navigate('/detail', { state: states });
+  };
+
   return (
     <div>
       <Header />
-      <div className='card-container'>
+      <div className='card-container' >
         { movies.map((movie) => (
-          <Card movie={movie} key={movie.id} genres={genres}/>
+          <Card movie={movie} key={movie.id} genres={genres} detailMovie={handleNavigate}/>
         ))}
       </div>
       <div className='pagination'>

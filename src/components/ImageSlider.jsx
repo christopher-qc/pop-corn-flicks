@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import '../styles/ImageSlider.css';
 
-const ImageSlider = ({ movies, indexDad  }) => {
+const ImageSlider = ({ movies, indexDad }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
 
