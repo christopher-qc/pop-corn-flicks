@@ -27,11 +27,8 @@ jobs:
           GITHUB_REPOSITORY: ${{ github.repository }}
           GITHUB_SHA: ${{ github.sha }}
           PR_NUMBER: ${{ env.PR_NUMBER }}
-          PR_TITLE: ${{ env.PR_TITLE }}
           REPOSITORY_NAME: ${{ github.event.repository.name }}
-          ACTOR: ${{ github.actor }}
         run: |
-          PR_URL="https://github.com/${GITHUB_REPOSITORY}/pull/${PR_NUMBER}"
           COMMIT_URL="https://github.com/${GITHUB_REPOSITORY}/commit/${GITHUB_SHA}"
           MERGE_COMMIT_MESSAGE=$(git log --format=%B -n 1 $GITHUB_SHA)
           MERGED_PR_NUMBER=$(echo "$MERGE_COMMIT_MESSAGE" | grep -oP '(?<=Merge pull request #)\d+' | head -1)
@@ -39,5 +36,5 @@ jobs:
 
           MENTION="<@788195198487363615>"
           curl -H "Content-Type: application/json" \
-            -d "{\"content\": \"Se ha hecho merge a la rama production en el repositorio ${REPOSITORY_NAME}: ${{ github.ref }}\n\nPull Request Mergeado: [${MERGED_PR_NUMBER}](${PR_URL}) - ${MERGED_PR_TITLE}\nCommit: [${GITHUB_SHA}](${COMMIT_URL})\nAutor: ${ACTOR}\nMencionado: ${MENTION}\"}" \
+            -d "{\"content\": \"Se ha hecho merge a la rama production en el repositorio ${REPOSITORY_NAME}: ${{ github.ref }}\nPull Request: ${{ github.event.pull_request.html_url }}\nCommit: [${GITHUB_SHA}](${COMMIT_URL})\nAutor: ${{ github.actor }}\nMencionado: ${MENTION}\"}" \
             $DISCORD_MERGE
