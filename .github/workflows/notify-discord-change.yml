@@ -1,0 +1,19 @@
+name: Notify Discord on Pull Request
+
+on:
+  pull_request:
+    types: [opened, labeled]
+
+jobs:
+  notify-discord:
+    if: ${{ contains(github.event.pull_request.labels.*.name, 'duplicate') }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Send notification to Discord
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+        run: |
+          MENTION="<@788195198487363615>"
+          PAYLOAD=$(jq -n --arg url "${{ github.event.pull_request.html_url }}" --arg mention "$MENTION" '{"content": "Nuevo pull request aprobado: \($url)\nMencionado: \($mention)"}')
+          curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
