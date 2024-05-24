@@ -15,5 +15,5 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           MENTION="<@788195198487363615>"
-          PAYLOAD=$(jq -n --arg url "${{ github.event.pull_request.html_url }}" --arg mention "$MENTION" '{"content": "Nuevo pull request que necesita QA: \($url)\nMencionado: \($mention)"}')
+          PAYLOAD=$(jq -n --arg url "${{ github.event.pull_request.html_url }}" --arg mention "$MENTION" '{"content": "Nuevo pull request aprobado: \($url)\nMencionado: \($mention)"}')
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
