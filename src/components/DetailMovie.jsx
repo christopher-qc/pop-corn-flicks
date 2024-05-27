@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import Header from "./Header"
-import { fetchCast } from '../apiServices';
+import { fetchCast, fetchVideos } from '../apiServices';
 import Carousel from './Carousel';
 
 import '../styles/DetailMovie.css'
@@ -11,28 +11,38 @@ const DetailMovie = () => {
   const location = useLocation();
   const [loaded, setLoaded] = useState(false);
   const { data, genres } = location.state;
-  // const [trailerKey, setTrailerKey] = useState(null);
+  const [trailerKey, setTrailerKey] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const showCast = async () => {
     try {
       const dataCast = await fetchCast(data.id);
       setCast(dataCast.cast);
+      const dataVideos = await fetchVideos(id);
+      if (dataVideos.length > 0) {
+        setTrailerKey(dataVideos[0].key);
+      }
       setLoaded(true);
     } catch {
       console.log('error')
     }
   }
 
-  // const handleTrailerClick = async () => {
-  //   const dataVideos = await fetchVideos();
-  //   setTrailerKey(dataVideos[0].key);
-  // }
+  const handleTrailerClick = async () => {
+    if (trailerKey) {
+      setShowModal(true);
+    }
+  }
 
   if (!loaded) {
     showCast();
   }
 
-  const {backdrop_path, overview, poster_path, release_date, title, vote_average} = data
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const {backdrop_path, overview, poster_path, release_date, title, vote_average, id} = data
 
   const date = new Date(release_date);
   const year = date.getFullYear();
@@ -57,19 +67,20 @@ const DetailMovie = () => {
           </div>
           <p className='title' style={{ fontSize: '25px' }}>Cast</p>
           <Carousel images={cast} />
-          {/*<button onClick={handleTrailerClick}>Ver Trailer</button>
-          {trailerKey && (
-            <div>
-              <iframe
-                width="560"
-                height="315"
-                src={`https://www.youtube.com/embed/${trailerKey}`}
-                title="Trailer"
-                frameBorder="0"
-                allowFullScreen
-              ></iframe>
-            </div>
-          )} */}
+          <button className="trailer-button" onClick={handleTrailerClick}>Ver Trailer</button>
+          {showModal && (
+            <div className="modal">
+            <span className="close-btn" onClick={handleCloseModal}>&times;</span>
+            <iframe
+              width="560"
+              height="315"
+              src={`https://www.youtube.com/embed/${trailerKey}`}
+              title="Trailer"
+              frameBorder="0"
+              allowFullScreen
+            ></iframe>
+          </div> 
+          )}
         </div>
       </div>
     </div>
