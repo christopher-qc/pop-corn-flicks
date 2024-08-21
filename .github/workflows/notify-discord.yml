@@ -13,10 +13,19 @@ jobs:
       - name: Get Pull Request Assignees
         id: get-assignees
         run: |
+          echo "Fetching PR assignees..."
           ASSIGNEES_RAW=$(curl -s -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/assignees")
           echo "Raw Assignees Data: $ASSIGNEES_RAW"
+          
+          # Extract the assignees
           ASSIGNEES=$(echo "$ASSIGNEES_RAW" | jq -r '.assignees[]?.login' | paste -sd ", ")
+
+          # Check if there are no assignees
+          if [ -z "$ASSIGNEES" ]; then
+            ASSIGNEES="No hay personas asignadas."
+          fi
+
           echo "Assignees: $ASSIGNEES"
           echo "::set-output name=assignees::$ASSIGNEES"
 
@@ -31,4 +40,5 @@ jobs:
           PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--mibodega-admin.netlify.app/"
           ASSIGNEES="${{ steps.get-assignees.outputs.assignees }}"
           PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg assignees "$ASSIGNEES" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n**Título:** \($title)\n\($description)\n**Asignados:** \($assignees)\nMencionado: \($mention)"}')
+          echo "Payload: $PAYLOAD"
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
