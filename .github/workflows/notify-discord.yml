@@ -10,35 +10,23 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Get Pull Request Assignees
-        id: get-assignees
-        run: |
-          echo "Fetching PR assignees..."
-          # Use the correct API endpoint for pull request assignees
-          ASSIGNEES_RAW=$(curl -s -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
-            "https://api.github.com/repos/${{ github.repository }}/pull/${{ github.event.pull_request.number }}/assignees")
-          echo "Raw Assignees Data: $ASSIGNEES_RAW"
-          
-          # Extract the assignees
-          ASSIGNEES=$(echo "$ASSIGNEES_RAW" | jq -r '.assignees[]?.login' | paste -sd ", ")
-
-          # Check if there are no assignees
-          if [ -z "$ASSIGNEES" ]; then
-            ASSIGNEES="No hay personas asignadas."
-          fi
-
-          echo "Assignees: $ASSIGNEES"
-          echo "::set-output name=assignees::$ASSIGNEES"
-
       - name: Send notification to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          TITLE="${{ github.event.pull_request.assignees[0].login }}"
+          TITLE="${{ github.event.pull_request.title }}"
           DESCRIPTION="${{ github.event.pull_request.body }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
           PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--mibodega-admin.netlify.app/"
-          ASSIGNEES="${{ steps.get-assignees.outputs.assignees }}"
-          PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg assignees "$ASSIGNEES" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n**Título:** \($title)\n\($description)\n**Asignados:** \($assignees)"}')
+          
+          # Extraer los logins de los asignados
+          ASSIGNEES=$(echo '${{ toJson(github.event.pull_request.assignees) }}' | jq -r 'map(.login) | join(", ")')
+          
+          # Validar si hay asignados
+          if [ -z "$ASSIGNEES" ]; then
+            ASSIGNEES="No hay personas asignadas"
+          fi
+
+          PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg assignees "$ASSIGNEES" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n**Título:** \($title)\n\($description)\n**Asignados:** \($assignees)"}')
           echo "Payload: $PAYLOAD"
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
