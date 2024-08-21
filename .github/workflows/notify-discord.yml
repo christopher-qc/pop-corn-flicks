@@ -17,5 +17,5 @@ jobs:
           MENTION="<@788195198487363615>"
           TITLE="${{ github.event.pull_request.title }}"
           DESCRIPTION="${{ github.event.pull_request.body }}"
-          PAYLOAD=$(jq -n --arg url "${{ github.event.pull_request.html_url }}" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Título:** \($title)\n\n**Descripción:**\n\($description)\n\nMencionado: \($mention)"}')
+          PAYLOAD=$(jq -n --arg url "${{ github.event.pull_request.html_url }}" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Título:** \($title)\n\($description)\n\nMencionado: \($mention)"}')
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
