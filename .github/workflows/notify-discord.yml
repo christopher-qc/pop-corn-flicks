@@ -34,12 +34,11 @@ jobs:
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
-          MENTION="<@788195198487363615>"
-          TITLE="${{ github.event.pull_request.title }}"
+          TITLE="${{ github.event.pull_request.assignees[0].login }}"
           DESCRIPTION="${{ github.event.pull_request.body }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
           PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--mibodega-admin.netlify.app/"
           ASSIGNEES="${{ steps.get-assignees.outputs.assignees }}"
-          PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg assignees "$ASSIGNEES" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n**Título:** \($title)\n\($description)\n**Asignados:** \($assignees)\nMencionado: \($mention)"}')
+          PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg assignees "$ASSIGNEES" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n**Título:** \($title)\n\($description)\n**Asignados:** \($assignees)"}')
           echo "Payload: $PAYLOAD"
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
