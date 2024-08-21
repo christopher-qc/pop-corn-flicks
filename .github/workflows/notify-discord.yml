@@ -14,6 +14,7 @@ jobs:
         id: get-assignees
         run: |
           echo "Fetching PR assignees..."
+          # Use the correct API endpoint for pull request assignees
           ASSIGNEES_RAW=$(curl -s -H "Authorization: token ${{ secrets.GIT_TOKEN }}" \
             "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/assignees")
           echo "Raw Assignees Data: $ASSIGNEES_RAW"
@@ -34,7 +35,7 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           MENTION="<@788195198487363615>"
-          TITLE="${{ github.event.pull_request.title }}"
+          TITLE="${{ github.event.pull_request }}"
           DESCRIPTION="${{ github.event.pull_request.body }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
           PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--mibodega-admin.netlify.app/"
