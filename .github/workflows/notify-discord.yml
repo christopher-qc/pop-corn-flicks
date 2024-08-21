@@ -10,6 +10,13 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Get Pull Request Assignees
+        id: get-assignees
+        run: |
+          ASSIGNEES=$(curl -s -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/assignees" | jq -r '.assignees[]?.login' | paste -sd ", ")
+          echo "::set-output name=assignees::$ASSIGNEES"
+
       - name: Send notification to Discord
         env:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
@@ -19,5 +26,6 @@ jobs:
           DESCRIPTION="${{ github.event.pull_request.body }}"
           PR_URL="${{ github.event.pull_request.html_url }}"
           PREVIEW_URL="https://deploy-preview-${{ github.event.pull_request.number }}--mibodega-admin.netlify.app/"
-          PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n\n**Título:** \($title)\n\($description)\n\nMencionado: \($mention)"}')
+          ASSIGNEES="${{ steps.get-assignees.outputs.assignees }}"
+          PAYLOAD=$(jq -n --arg url "$PR_URL" --arg preview "$PREVIEW_URL" --arg mention "$MENTION" --arg title "$TITLE" --arg description "$DESCRIPTION" --arg assignees "$ASSIGNEES" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Vista previa:** \($preview)\n**Título:** \($title)\n\($description)\n**Asignados:** \($assignees)\nMencionado: \($mention)"}')
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
