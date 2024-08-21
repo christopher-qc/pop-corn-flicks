@@ -15,7 +15,7 @@ jobs:
           DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
         run: |
           MENTION="<@788195198487363615>"
-          DESCRIPTION=$(echo "${{ github.event.pull_request.body }}" | sed -n '/^Description/,/^Acceptance Test/p' | sed '$d')
-          ACCEPTANCE_TEST=$(echo "${{ github.event.pull_request.body }}" | sed -n '/^Acceptance Test/,/^Implementation Notes/p' | sed '$d')
+          DESCRIPTION=$(echo "${{ github.event.pull_request.body }}" | awk '/^Description/{flag=1;next}/^Acceptance Test/{flag=0}flag' | sed '$!s/$/\\n/')
+          ACCEPTANCE_TEST=$(echo "${{ github.event.pull_request.body }}" | awk '/^Acceptance Test/{flag=1;next}/^Implementation Notes/{flag=0}flag' | sed '$!s/$/\\n/')
           PAYLOAD=$(jq -n --arg url "${{ github.event.pull_request.html_url }}" --arg mention "$MENTION" --arg description "$DESCRIPTION" --arg acceptance "$ACCEPTANCE_TEST" '{"content": "Nuevo pull request que necesita QA: \($url)\n\n**Descripción:**\n\($description)\n\n**Acceptance Test:**\n\($acceptance)\n\nMencionado: \($mention)"}')
           curl -H "Content-Type: application/json" -d "$PAYLOAD" $DISCORD_WEBHOOK_URL
