@@ -1,40 +1,40 @@
-name: Link PRs to Notion
+# name: Link PRs to Notion
 
-on:
-  pull_request:
-    types: [opened, reopened, synchronize]
+# on:
+#   pull_request:
+#     types: [opened, reopened, synchronize]
 
-jobs:
-  link_pr_to_notion:
-    runs-on: ubuntu-latest
+# jobs:
+#   link_pr_to_notion:
+#     runs-on: ubuntu-latest
 
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+#     steps:
+#       - name: Checkout code
+#         uses: actions/checkout@v2
 
-      - name: Link PR to Notion
-        env:
-          NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
-        run: |
-          PR_TITLE="${{ github.event.pull_request.title }}"
-          PR_URL="${{ github.event.pull_request.html_url }}"
+#       - name: Link PR to Notion
+#         env:
+#           NOTION_API_KEY: ${{ secrets.NOTION_API_KEY }}
+#         run: |
+#           PR_TITLE="${{ github.event.pull_request.title }}"
+#           PR_URL="${{ github.event.pull_request.html_url }}"
 
-          # Assuming PR titles contain the ticket ID (e.g., "TICKET-123: Fix bug")
-          TICKET_ID=$(echo "$PR_TITLE" | grep -o 'TICKET-[0-9]*')
+#           # Assuming PR titles contain the ticket ID (e.g., "TICKET-123: Fix bug")
+#           TICKET_ID=$(echo "$PR_TITLE" | grep -o 'TICKET-[0-9]*')
 
-          if [ -z "$TICKET_ID" ]; then
-            echo "No ticket ID found in PR title."
-            exit 0
-          fi
+#           if [ -z "$TICKET_ID" ]; then
+#             echo "No ticket ID found in PR title."
+#             exit 0
+#           fi
 
-          curl -X PATCH "https://api.notion.com/v1/pages/${TICKET_ID}" \
-          -H "Authorization: Bearer $NOTION_API_KEY" \
-          -H "Content-Type: application/json" \
-          -H "Notion-Version: 2022-06-28" \
-          -d '{
-                "properties": {
-                  "PR Link": {
-                    "url": "'"$PR_URL"'"
-                  }
-                }
-              }'
+#           curl -X PATCH "https://api.notion.com/v1/pages/${TICKET_ID}" \
+#           -H "Authorization: Bearer $NOTION_API_KEY" \
+#           -H "Content-Type: application/json" \
+#           -H "Notion-Version: 2022-06-28" \
+#           -d '{
+#                 "properties": {
+#                   "PR Link": {
+#                     "url": "'"$PR_URL"'"
+#                   }
+#                 }
+#               }'
