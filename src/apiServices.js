@@ -26,4 +26,3 @@ export const fetchVideos = async (id) => {
     const response = await axios.get(url);
     return response.data.results;
 }
-
