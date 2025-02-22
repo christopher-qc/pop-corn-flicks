@@ -1,59 +1,49 @@
-import { useState }from 'react'
+import { useState, useEffect }from 'react'
 import ImageSlider from './ImageSlider'
 import Info from './Info'
 import Header from './Header'
+import { HStack, Spinner } from "@chakra-ui/react"
 
-import { fetchAllMovies, fetchGenres } from '../apiServices'
+import useStore from '@/store/useStore';
+
 
 function App() {
+  const [index, setIndex] = useState(0)
 
-  const [movies, setMovies] = useState([])
-  const [urlImage, setUrlImage] = useState('')
-  const [loaded, setLoaded] = useState(false);
-  // const [load, setLoad] = useState(false);
-  const [firstObj, setFirstObj] = useState({});
-  const [genres, setGenres] = useState({});
+  const { movies, genres, loading, error, fetchMovies, fetchGenres } = useStore();  
 
-  const fetchMovies = async () => {
-
-    // if(load) {setMovies([]);}
-
-    try {
-      const data = await fetchAllMovies();
-      const dataGenres = await fetchGenres();
-      const genresMap = dataGenres.reduce((map, genre) => {
-        map[genre.id] = genre.name;
-        return map;
-      }, {});
-      setGenres(genresMap);
-      setMovies(prevMovies => [...prevMovies, ...data.results]);
-      setLoaded(true);
-      setFirstObj(data.results[0]);
-      setUrlImage(`https://image.tmdb.org/t/p/w1280${data.results[0].poster_path}`)
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (!loaded) {
+  useEffect(() => {
     fetchMovies();
-  }
-  
+  }, [fetchMovies]);
 
-  const indexChildren = (obj) => {
-    const url = `https://image.tmdb.org/t/p/w1280${obj.poster_path}`
-    setUrlImage(url);
-    setFirstObj(obj);
+  useEffect(() => {
+    fetchGenres();
+  }, [fetchGenres]);
+
+  const indexChildren = (index) => {
+    setIndex(index)
   };
+
+  if (loading) {
+    return (
+      <HStack gap="5">
+        <Spinner size="xl" />
+      </HStack>
+    )
+  }
 
   return (
       <div className="app">
-        <div className="blurry-background" style={{ backgroundImage: `url(${urlImage})` }}></div>
+        {error && <p>{error}</p>}
+        {movies.length && <div className="blurry-background" style={{ backgroundImage: `url(${movies[index].imageBig})` }}></div> }
         <Header />
-        <div className="content-container">
-          {loaded && <Info info={firstObj} genres={genres} />}
-          <ImageSlider movies={movies} indexDad={indexChildren} />
-        </div>
+         
+        {movies.length && 
+          <div className="content-container">
+            <Info info={movies[index]} genres={genres} />
+            <ImageSlider movies={movies} indexDad={indexChildren} />
+          </div>
+        }
       </div>
   )
 }

@@ -7,15 +7,15 @@ const ImageSlider = ({ movies, indexDad }) => {
 
   const handlePrev = () => {
     const newIndex = currentIndex === 0 ? movies.length - 1 : currentIndex - 1;
-    const obj = movies.find((m, index) => index === newIndex);
-    indexDad(obj)
+    const index = movies.findIndex((m, index) => index === newIndex);
+    indexDad(index)
     setCurrentIndex(newIndex);
   };
 
   const handleNext = () => {
     const newIndex = currentIndex === movies.length - 1 ? 0 : currentIndex + 1;
-    const obj = movies.find((m, index) => index === newIndex);
-    indexDad(obj)
+    const index = movies.findIndex((m, index) => index === newIndex);
+    indexDad(index)
     setCurrentIndex(newIndex);
   };
 

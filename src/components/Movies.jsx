@@ -1,59 +1,26 @@
-import { useState }from 'react'
+import { useEffect, useState }from 'react'
 import Header from "./Header"
-import { fetchAllMovies, fetchGenres } from '../apiServices'
 import Card from './Card'
 import { useNavigate } from 'react-router-dom';
+import { HStack, Spinner } from "@chakra-ui/react"
+
+import useStore from '@/store/useStore';
 
 import '../styles/Movies.css'
 
 const Movies = () => {
-  const [movies, setMovies] = useState([])
-  const [loaded, setLoaded] = useState(false);
-  // const [load, setLoad] = useState(false);
-  const [page, setPage] = useState(1);
-  const [genres, setGenres] = useState({});
-  const [disabled, setDisabled] = useState(true);
+  const [page, ] = useState(1);
+  
+  const [disabled, ] = useState(true);
 
-  const fetchMovies = async (numPage) => {
-
-    if(loaded) {
-      setMovies([]);
-    }
-
-    try {
-      const data = await fetchAllMovies(numPage);
-      const dataGenres = await fetchGenres();
-      const genresMap = dataGenres.reduce((map, genre) => {
-        map[genre.id] = genre.name;
-        return map;
-      }, {});
-      setGenres(genresMap);
-      setMovies(prevMovies => [...prevMovies, ...data.results]);
-      setLoaded(true);
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  if (!loaded) {
-    fetchMovies();
-  }
+  const { movies, genres, loading, error, fetchMovies, fetchGenres } = useStore();  
 
   const handleLoadMoreClick = () => {
-    setPage(prevPage => prevPage + 1);
-    setLoaded(true);
-    const numPage = page + 1
-    fetchMovies(numPage);
-    setDisabled(false);
+    console.log('2')
   };
 
   const handleBackClick = () => {
-    setPage(prevPage => prevPage - 1);
-    setLoaded(true);
-    const numPage = page - 1
-    fetchMovies(numPage);
-    const disabled = numPage <= 1;
-    setDisabled(disabled);
+    console.log('2')
   };
 
   const navigate = useNavigate();
@@ -62,9 +29,23 @@ const Movies = () => {
     navigate('/detail', { state: states });
   };
 
+  useEffect(() => {
+    fetchMovies();
+  }, [fetchMovies]);
+
+  useEffect(() => {
+    fetchGenres();
+  }, [fetchGenres]);
+
   return (
     <div>
       <Header />
+      { loading && (
+        <HStack gap="5">
+          <Spinner size="xl" />
+        </HStack>
+      )}
+      {error && <p>{error}</p>}
       <div className='card-container' >
         { movies.map((movie) => (
           <Card movie={movie} key={movie.id} genres={genres} detailMovie={handleNavigate}/>

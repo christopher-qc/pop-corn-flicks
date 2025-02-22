@@ -1,48 +1,40 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useLocation } from 'react-router-dom';
 import Header from "./Header"
-import { fetchCast, fetchVideos } from '../apiServices';
 import Carousel from './Carousel';
+import { HStack, Spinner } from "@chakra-ui/react"
+
+import useStore from '@/store/useStore';
 
 import '../styles/DetailMovie.css'
 
 const DetailMovie = () => {
-  const [cast, setCast] = useState([]);
-  const location = useLocation();
-  const [loaded, setLoaded] = useState(false);
-  const { data, genres } = location.state;
-  const [trailerKey, setTrailerKey] = useState(null);
   const [showModal, setShowModal] = useState(false);
+  const location = useLocation();
+  const { data, genres } = location.state;
 
-  const showCast = async () => {
-    try {
-      const dataCast = await fetchCast(data.id);
-      setCast(dataCast.cast);
-      const dataVideos = await fetchVideos(id);
-      if (dataVideos.length > 0) {
-        setTrailerKey(dataVideos[0].key);
-      }
-      setLoaded(true);
-    } catch {
-      console.log('error')
-    }
-  }
+  const { cast, videos, loading, error, fetchCast, fetchVideos } = useStore();
+
+  useEffect(() => {
+    fetchCast();
+  }, [fetchCast]);
+
+  useEffect(() => {
+    fetchVideos();
+  }, [fetchVideos]);
+  
 
   const handleTrailerClick = async () => {
-    if (trailerKey) {
+    if (videos) {
       setShowModal(true);
     }
-  }
-
-  if (!loaded) {
-    showCast();
   }
 
   const handleCloseModal = () => {
     setShowModal(false);
   };
 
-  const {backdrop_path, overview, poster_path, release_date, title, vote_average, id} = data
+  const {backdrop_path, overview, poster_path, release_date, title, vote_average} = data
 
   const date = new Date(release_date);
   const year = date.getFullYear();
@@ -51,7 +43,13 @@ const DetailMovie = () => {
   return (
     <div className="app">
       <div className="blurry" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${backdrop_path})` }}></div>
-      <Header />  
+      <Header />
+      { loading && (
+        <HStack gap="5">
+          <Spinner size="xl" />
+        </HStack>
+      )}
+      {error && <p>{error}</p>}
       <div className="content">
         <img className="poster" src={`https://image.tmdb.org/t/p/w500${poster_path}`} alt="" />
           <div className="details">
@@ -74,7 +72,7 @@ const DetailMovie = () => {
             <iframe
               width="560"
               height="315"
-              src={`https://www.youtube.com/embed/${trailerKey}`}
+              src={`https://www.youtube.com/embed/${videos}`}
               title="Trailer"
               frameBorder="0"
               allowFullScreen
