@@ -32,9 +32,14 @@ function App() {
     )
   }
 
+  if (error) {
+    return (
+      <p>{error}</p>
+    )
+  }
+
   return (
       <div className="app">
-        {error && <p>{error}</p>}
         {movies.length && <div className="blurry-background" style={{ backgroundImage: `url(${movies[index].imageBig})` }}></div> }
         <Header />
          

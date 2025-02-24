@@ -16,13 +16,12 @@ const DetailMovie = () => {
   const { cast, videos, loading, error, fetchCast, fetchVideos } = useStore();
 
   useEffect(() => {
-    fetchCast();
-  }, [fetchCast]);
+    fetchCast(data.id);
+  }, [fetchCast, data.id]);
 
   useEffect(() => {
-    fetchVideos();
-  }, [fetchVideos]);
-  
+    fetchVideos(data.id);
+  }, [fetchVideos, data.id]);
 
   const handleTrailerClick = async () => {
     if (videos) {
@@ -40,16 +39,24 @@ const DetailMovie = () => {
   const year = date.getFullYear();
   const vote = vote_average.toFixed(1)
 
+  if (loading) {
+    return (
+      <HStack gap="5">
+        <Spinner size="xl" />
+      </HStack>
+    )
+  }
+
+  if (error) {
+    return (
+      <p>{error}</p>
+    )
+  }
+
   return (
     <div className="app">
       <div className="blurry" style={{ backgroundImage: `url(https://image.tmdb.org/t/p/original${backdrop_path})` }}></div>
       <Header />
-      { loading && (
-        <HStack gap="5">
-          <Spinner size="xl" />
-        </HStack>
-      )}
-      {error && <p>{error}</p>}
       <div className="content">
         <img className="poster" src={`https://image.tmdb.org/t/p/w500${poster_path}`} alt="" />
           <div className="details">
@@ -66,13 +73,13 @@ const DetailMovie = () => {
           <p className='title' style={{ fontSize: '25px' }}>Cast</p>
           <Carousel images={cast} />
           <button className="trailer-button" onClick={handleTrailerClick}>Ver Trailer</button>
-          {showModal && (
+          {showModal && videos.length && (
             <div className="modal">
             <span className="close-btn" onClick={handleCloseModal}>&times;</span>
             <iframe
               width="560"
               height="315"
-              src={`https://www.youtube.com/embed/${videos}`}
+              src={`https://www.youtube.com/embed/${videos[0].key}`}
               title="Trailer"
               frameBorder="0"
               allowFullScreen

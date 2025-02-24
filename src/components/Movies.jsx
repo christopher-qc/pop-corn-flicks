@@ -2,25 +2,27 @@ import { useEffect, useState }from 'react'
 import Header from "./Header"
 import Card from './Card'
 import { useNavigate } from 'react-router-dom';
-import { HStack, Spinner } from "@chakra-ui/react"
+import { HStack, Spinner, Icon } from "@chakra-ui/react"
+import { HiChevronLeft, HiChevronRight  } from "react-icons/hi"
+
 
 import useStore from '@/store/useStore';
 
 import '../styles/Movies.css'
 
 const Movies = () => {
-  const [page, ] = useState(1);
-  
-  const [disabled, ] = useState(true);
+  const [page, setPage] = useState(1);
 
   const { movies, genres, loading, error, fetchMovies, fetchGenres } = useStore();  
 
-  const handleLoadMoreClick = () => {
-    console.log('2')
+  const handleBackClick = () => {
+    if (page > 1) {
+      setPage(page - 1);
+    }
   };
 
-  const handleBackClick = () => {
-    console.log('2')
+  const handleLoadMoreClick = () => {
+    setPage(page + 1);
   };
 
   const navigate = useNavigate();
@@ -30,35 +32,48 @@ const Movies = () => {
   };
 
   useEffect(() => {
-    fetchMovies();
-  }, [fetchMovies]);
+    fetchMovies(page);
+  }, [fetchMovies, page]);
 
   useEffect(() => {
     fetchGenres();
   }, [fetchGenres]);
 
+  if (loading) {
+    return (
+      <HStack gap="5">
+        <Spinner size="xl" />
+      </HStack>
+    )
+  }
+
+  if (error) {
+    return (
+      <p>{error}</p>
+    )
+  }
+
   return (
     <div>
       <Header />
-      { loading && (
-        <HStack gap="5">
-          <Spinner size="xl" />
-        </HStack>
-      )}
-      {error && <p>{error}</p>}
       <div className='card-container' >
         { movies.map((movie) => (
           <Card movie={movie} key={movie.id} genres={genres} detailMovie={handleNavigate}/>
         ))}
       </div>
       <div className='pagination'>
-        <button onClick={handleBackClick} disabled={disabled}>
-          <i className="material-icons" style={{ fontSize: '18px', color: 'black'}}>arrow_back_ios</i>
+        <button onClick={handleBackClick}>
+          <Icon fontSize="2xl" color="#111111">
+          <HiChevronLeft  />
+        </Icon>
         </button>
         <h3>{page}</h3>
         <button onClick={handleLoadMoreClick}>
-          <i className="material-icons" style={{ fontSize: '18px', color: 'black'}}>arrow_forward_ios</i>
+          <Icon fontSize="2xl" color="#111111">
+          <HiChevronRight  />
+        </Icon>
         </button>
+        
       </div>
     </div>
   )

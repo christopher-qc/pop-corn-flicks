@@ -45,7 +45,7 @@ const useStore = create((set) => ({
         try {
             const url = `https://api.themoviedb.org/3/movie/${id}/credits?api_key=${apiKey}`;
             const response = await axios.get(url);
-            set({ cast: response.data, loading: false })
+            set({ cast: response.data.cast, loading: false })
         } catch(err) {
             console.log(err)
             set({ error: err.message, loading: false })
